@@ -49,7 +49,9 @@ class ContractProcessingService:
 
         return self
 
-    def process_documents(self, folder_path="knowledge/contracts/"):
+    def process_documents(
+        self, folder_path="contract_analysis_flow_workshop/knowledge/contracts/"
+    ):
         """Process all PDF documents in the specified folder and store chunks in Weaviate"""
         if not self.client or not self.collection:
             self.connect()

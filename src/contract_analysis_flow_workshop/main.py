@@ -9,6 +9,11 @@ from contract_analysis_flow_workshop.pre_process_service import (
 from crewai_tools import WeaviateVectorSearchTool
 from crewai import Agent
 
+from contract_analysis_flow_workshop.events.eval_listener import EvalListener
+
+
+eval_listener = EvalListener()
+
 
 class Report(BaseModel):
     report: str
@@ -29,7 +34,7 @@ class ContractAnalysisFlow(Flow[ContractAnalysisState]):
         service = ContractProcessingService()
         with service:
             service.process_documents(
-                folder_path="knowledge/contracts/",
+                # folder_path="knowledge/contracts/",
             )
         # self.state.query = self.inputs["query"]
 
@@ -91,7 +96,9 @@ class ContractAnalysisFlow(Flow[ContractAnalysisState]):
 def kickoff():
     contract_analysis_flow = ContractAnalysisFlow()
     contract_analysis_flow.kickoff(
-        inputs={"query": "how are warranties defined in digitalcinemadestination?"}
+        inputs={
+            "query": "how are warranties defined in digitalcinemadestination compared to cybergyholdingsinc?"
+        }
     )
 
 
