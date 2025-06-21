@@ -9,16 +9,9 @@ from contract_analysis_flow_workshop.pre_process_service import (
 from crewai_tools import WeaviateVectorSearchTool
 from crewai import Agent
 
-from contract_analysis_flow_workshop.events.eval_listener import EvalListener
-
-
-eval_listener = EvalListener()
-
-
 class Report(BaseModel):
     report: str
     source_citations: list[str]
-
 
 class ContractAnalysisState(BaseModel):
     metadata_filters: str = ""
@@ -26,22 +19,22 @@ class ContractAnalysisState(BaseModel):
     contract_analysis: str = ""
     report: Report = Report(report="", source_citations=[])
 
-
 class ContractAnalysisFlow(Flow[ContractAnalysisState]):
+    inputs: dict = {"query": "how are warranties defined in digitalcinemadestination?"}
+
     @start()
     def pre_process_documents(self):
         print("Pre-processing documents with query", self.state.query)
         service = ContractProcessingService()
         with service:
             service.process_documents(
-                # folder_path="knowledge/contracts/",
+                folder_path="knowledge/contracts/",
             )
-        # self.state.query = self.inputs["query"]
-
+        self.state.query = self.inputs["query"]
         return {"query": self.state.query}
 
     vector_search_tool = WeaviateVectorSearchTool(
-        collection_name="contracts_business_latest_6",
+        collection_name="Contracts_business_latest_6",
         weaviate_cluster_url=os.getenv("WEAVIATE_URL"),
         weaviate_api_key=os.getenv("WEAVIATE_API_KEY"),
     )
@@ -96,16 +89,12 @@ class ContractAnalysisFlow(Flow[ContractAnalysisState]):
 def kickoff():
     contract_analysis_flow = ContractAnalysisFlow()
     contract_analysis_flow.kickoff(
-        inputs={
-            "query": "how are warranties defined in digitalcinemadestination compared to cybergyholdingsinc?"
-        }
+        inputs={"query": "how are warranties defined in digitalcinemadestination?"}
     )
-
 
 def plot():
     contract_analysis_flow = ContractAnalysisFlow()
     contract_analysis_flow.plot()
-
 
 if __name__ == "__main__":
     kickoff()
